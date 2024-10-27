@@ -3,4 +3,10 @@
     <string name="priority_low">low</string>
     <string name="priority_medium">medium</string>
     <string name="priority_high">high</string>
+    <string name="loading">Loading</string>
+    <string name="loading_failed">Failed to load</string>
+    <string name="view_task">View Task</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="new_task">New Task</string>
+    <string name="back_button">Back</string>
 </resources>

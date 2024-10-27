@@ -3,23 +3,39 @@ package uk.ac.rgu.rgtodu.ui
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import uk.ac.rgu.rgtodu.data.DataSource
+import kotlinx.coroutines.launch
+import uk.ac.rgu.rgtodu.data.Task
+import uk.ac.rgu.rgtodu.network.TaskApi
 import uk.ac.rgu.rgtodu.data.TaskUiState
+import java.io.IOException
+
+/**
+ * UI state for the Home screen
+ */
+sealed interface TasksUiState {
+    data class Success(val tasks: List<Task>) : TasksUiState
+    object Error : TasksUiState
+    object Loading : TasksUiState
+}
+
 
 /**
  * [TaskViewModel] holds information about a Task being created / edited.
  */
 class TaskViewModel : ViewModel() {
 
-
-
+    /**
+     * The mutable State that stores the status of the most recent requst
+     */
+    var tasksUiState: TasksUiState by mutableStateOf(TasksUiState.Loading)
+        private set
 
     /**
      * Task state for this task
@@ -37,6 +53,9 @@ class TaskViewModel : ViewModel() {
     var taskEstimatedHours  by mutableStateOf( 0)
         private set
     var taskDeadline by mutableStateOf("")
+        private set
+
+    var task by mutableStateOf(Task())
         private set
 
     /**
@@ -61,6 +80,7 @@ class TaskViewModel : ViewModel() {
      */
     fun updateTaskDescription(taskDescription: String) {
         this.taskDescription = taskDescription
+
     }
 
 
@@ -106,17 +126,79 @@ class TaskViewModel : ViewModel() {
      * Stores details of the task in the UI State, as defined by the various task properties
      */
     fun storeTask(){
+        this.task =  Task(
+            name = this.taskName,
+            description = this.taskDescription,
+            priority = this.taskPriority,
+            estimatedHours = this.taskEstimatedHours,
+            deadline = this.taskDeadline)
+
         _uiState.update { currentState ->
+            var newTaskList = currentState.taskList.toMutableStateList()
+            newTaskList.add(this.task)
+
             currentState.copy(
-                taskName = this.taskName,
-             taskDescription = this.taskDescription,
-             selectedPriorityOption = this.taskPriority,
-             taskEstimatedHours = this.taskEstimatedHours,
-             taskDeadline = this.taskDeadline
+                task = this.task,
+                taskList = newTaskList
             )
         }
-
     }
 
+    fun setCurrentTask(t : Task){
+        this.task = t
+        _uiState.update { currentState ->
+            currentState.copy(
+                task = t
+            )
+        }
+    }
+
+    fun setTaskList(taskList : List<Task>){
+        _uiState.update { currentState ->
+            currentState.copy(
+                taskList = taskList
+            )
+        }
+    }
+
+    /**
+     * Call getTasks() on itit so we can display them
+     */
+    init{
+        getTasks()
+    }
+
+    private fun getTasks(){
+        viewModelScope.launch {
+            tasksUiState =
+            try {
+                val listResult = TaskApi.retrofitService.getTasks()
+                setTaskList(listResult)
+                TasksUiState.Success(listResult)
+            } catch (e :IOException){
+                TasksUiState.Error
+            }
+
+        }
+    }
+
+    fun removeTaskFromList(task: Task) {
+        var newTaskList = uiState.value.taskList.toMutableList()
+        newTaskList.remove(task)
+        setTaskList(newTaskList)
+    }
+
+    fun resetCurrentTask() {
+        this.taskName = ""
+        this.taskDescription = ""
+        this.taskPriority = ""
+        this.taskEstimatedHours = 0
+        this.taskDeadline = ""
+        setCurrentTask(Task())
+    }
+
+    fun updateTask() {
+        TODO("Not yet implemented")
+    }
 
 }
