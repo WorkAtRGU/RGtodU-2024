@@ -42,6 +42,11 @@ All pages below are implemented as a fragment, hosted in MainActivity, with navi
 - An app bar is shown at the top of each page, with the name of the page and a back button supporting navigation
 - Other navigation is completed through clicking Buttons on each page.
 
+User navigates through the different pages as shown.
+
+![Slide1](https://github.com/user-attachments/assets/f9eed492-6da9-4742-a0ef-d130470806c0)
+
+
 The app uses the ViewModel and UI State architecture components, defining a TaskUiState data class,  is used to store the state of each of the current task's attributions using the Flow framework.
 - name : String, giving the task's name
 - description : String, an extended description of the thing to be done
@@ -64,6 +69,10 @@ todo: insert screenshot of create task / edit task page
 - Each attribute (and label) are arranged within a Column, which is scrollable.
 - Clicking Cancel button resets the TaskViewModel and navigates to the Start page
 - Clicking Save button has TaskViewModel store the Task in the TaskUIState (or update the Task details in the list of all tasks if editing an existing task) and navigates to the Start page.
+- A date selection dialog is shown to select / edit the deadline, as shown below
+
+ ![Slide2](https://github.com/user-attachments/assets/3e98f2ab-4093-4407-b047-16c93e2f16e3)
+
 
 ** View a task **
 todo: insert screenshot
