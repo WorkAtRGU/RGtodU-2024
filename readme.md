@@ -42,7 +42,7 @@ All pages below are implemented as a fragment, hosted in MainActivity, with navi
 - An app bar is shown at the top of each page, with the name of the page and a back button supporting navigation
 - Other navigation is completed through clicking Buttons on each page.
 
-The app uses a TaskUiState data class,  is used to store the state of each of the current task's attributions using the Flow framework.
+The app uses the ViewModel and UI State architecture components, defining a TaskUiState data class,  is used to store the state of each of the current task's attributions using the Flow framework.
 - name : String, giving the task's name
 - description : String, an extended description of the thing to be done
 - priority : String, the selected priority (importance of the task). The options are low, medium, high
@@ -89,3 +89,8 @@ Stores data in a single RoomsQL database table, with columns
 - priority
 - deadline
 
+## Tool Review ##
+TODO: some thoughts on using Android Studio, the debugger, virtual devices, other tools used, e.g. generative AI
+
+## Security Review ##
+TODO: evaluation of the Privacy and Security Guidelines relevance to this app.
